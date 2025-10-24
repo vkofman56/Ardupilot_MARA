@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/victorkofman/Ardupilot_MARA/**)",
+      "Bash(git submodule:*)",
+      "Bash(./waf:*)",
+      "WebFetch(domain:firmware.ardupilot.org)",
+      "Bash(curl:*)",
+      "Bash(cat:*)",
+      "Bash(open arm-toolchain.pkg)",
+      "Read(//opt/**)",
+      "Read(//Applications/**)",
+      "Bash(export PATH=/Applications/ArmGNUToolchain/11.3.rel1/arm-none-eabi/bin:$PATH)",
+      "Bash(pip3 install:*)",
+      "Bash(python3 -m pip install:*)",
+      "Bash(python3:*)",
+      "Bash(/opt/homebrew/bin/python3:*)",
+      "Bash(brew install:*)",
+      "Bash(Tools/environment_install/install-prereqs-mac.sh:*)",
+      "Bash(chmod:*)",
+      "Bash(brew reinstall:*)",
+      "Bash(find:*)",
+      "Bash(git clone:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

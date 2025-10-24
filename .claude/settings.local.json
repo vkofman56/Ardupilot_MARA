@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(export PATH=/Applications/ArmGNUToolchain/11.3.rel1/arm-none-eabi/bin:$PATH)",
+      "Bash(./waf configure:*)",
+      "Bash(./waf copter:*)",
+      "Bash(./waf distclean)",
+      "Bash(python3 -m pip install:*)",
+      "Bash(cat:*)",
+      "Bash(system_profiler:*)",
+      "Bash(ls:*)",
+      "Bash(xargs:*)",
+      "Bash(./build_custom_kakuteh7mini_nand.sh)",
+      "Read(//Users/victorkofman/code/MARA/**)",
+      "Bash(pio run:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

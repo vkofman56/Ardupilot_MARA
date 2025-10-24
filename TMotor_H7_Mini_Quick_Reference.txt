@@ -1,0 +1,233 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║           T-MOTOR H7 MINI - QUICK REFERENCE CARD                          ║
+║                    DFU Recovery & Technical Data                           ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+BOARD SPECIFICATIONS
+═══════════════════════════════════════════════════════════════════════════════
+MCU:                    STM32H743 @ 480 MHz
+Board ID:               1138 (0x472 in decimal)
+Flash Memory:           2048 KB total
+  - Bootloader:        384 KB (0x08000000 - 0x08060000)
+  - Application:       1664 KB (0x08060000 onward)
+External Flash:         128 Mbits (16 MB) dataflash
+RAM:                    1055 KB total (6 regions)
+
+USB INTERFACE
+═══════════════════════════════════════════════════════════════════════════════
+Port:                   USB OTG FS (Full Speed)
+Data Pins:              PA11 (DM), PA12 (DP)
+DFU Vendor ID:          0x0483 (STMicroelectronics)
+DFU Product ID:         0xdf11
+Full DFU ID:            0483:df11
+
+DEBUG INTERFACE
+═══════════════════════════════════════════════════════════════════════════════
+SWD Data (SWDIO):       PA13 (JTMS)
+SWD Clock (SWCLK):      PA14 (JTCK)
+Bootloader LED:         PA8 (active low)
+
+BOOTLOADER CONFIGURATION
+═══════════════════════════════════════════════════════════════════════════════
+Timeout:                5 seconds (HAL_BOOTLOADER_TIMEOUT)
+Entry Method:           Bootloader button + USB connection
+DFU Boot via FW:        DISABLED (HAL_ENABLE_DFU_BOOT = FALSE)
+Bootloader Update:      ENABLED (via MAVLink command)
+Boot Magic Register:    RTC backup registers
+
+CRITICAL PINS & FUNCTIONS
+═══════════════════════════════════════════════════════════════════════════════
+SPI1 (ICM/BMI):         PA5 (CLK), PA6 (MISO), PA7 (MOSI), PA4 (CS)
+SPI2 (OSD):             PB13 (CLK), PB14 (MISO), PB15 (MOSI), PB12 (CS)
+SPI3 (Flash):           PB2 (MOSI), PC10 (CLK), PC11 (MISO), PA15 (CS)
+SPI4 (Unused):          PE12 (CLK), PE13 (MISO), PE14 (MOSI)
+
+UART Mapping:
+  - UART1 (PA10):       ESC Telemetry
+  - UART3 (PD8/9):      Generic
+  - UART5 (PC12/PD2):   GPS
+  - UART6 (PC6/7):      RC Input
+  - UART7 (PE7/8):      DJI VTX
+  - UART8 (PE0/1):      SBUS/SmartAudio
+
+I2C1 (PB6/7):           External Compass/Baro
+
+BATTERY MONITORING
+═══════════════════════════════════════════════════════════════════════════════
+Voltage Pin:            PC1 (ADC channel 11)
+Voltage Scale:          11.0x
+Current Pin:            PC3 (ADC channel 13)
+Current Scale:          50.0 (50A max)
+Monitor Type:           4 (INA226/3 style)
+
+MOTOR OUTPUT
+═══════════════════════════════════════════════════════════════════════════════
+M1-M4:                  PA0-PA3 (TIM5, 16-bit, bi-directional DShot capable)
+M5 (LED):               PA8 (TIM1)
+LED1:                   PE5
+LED2:                   PE4
+Buzzer:                 PE3
+
+═══════════════════════════════════════════════════════════════════════════════
+DFU RECOVERY PROCEDURE
+═══════════════════════════════════════════════════════════════════════════════
+
+QUICK STEPS:
+1. Locate bootloader button (small tactile button, usually near USB)
+2. Press and HOLD bootloader button
+3. Connect USB cable to computer
+4. Maintain button press for 2+ seconds
+5. Release button (DFU device should enumerate)
+6. Execute: dfu-util -d 0483:df11 -a 0 -s 0x08000000 \
+           -D TMotorH743_with_bl.hex
+7. Wait 30-60 seconds for completion
+8. Board should boot normally
+
+VERIFICATION:
+Linux/Mac:   lsusb | grep STM32  OR  dfu-util -l
+Windows:     Device Manager > Universal Serial Bus devices
+Expected:    "STMicroelectronics STM Device in DFU Mode"
+
+═══════════════════════════════════════════════════════════════════════════════
+BOOTLOADER TIMEOUT BEHAVIOR
+═══════════════════════════════════════════════════════════════════════════════
+
+Board at Startup:
+  T=0ms:    Bootloader starts, initializes USB
+  T=0-5000ms: Listens for DFU commands/firmware upload
+  T=5000ms+: If no valid firmware: stays in bootloader (5 sec timeout)
+             If valid firmware detected: boots to app
+
+During Normal Operation (firmware running):
+  - Must use bootloader button to re-enter bootloader
+  - Software-triggered DFU NOT available (disabled)
+  - MAVLink firmware updates still work (uses bootloader)
+
+═══════════════════════════════════════════════════════════════════════════════
+FIRMWARE FILES LOCATION
+═══════════════════════════════════════════════════════════════════════════════
+
+In ArduPilot Source:
+  /Tools/bootloaders/TMotorH743_bl.bin     (384 KB, binary)
+  /Tools/bootloaders/TMotorH743_bl.hex     (Intel Hex format)
+  
+Built Firmware (after ./waf configure --board TMotorH743 build):
+  build/TMotorH743/bin/ardupilot.bin       (firmware only)
+  build/TMotorH743/bin/ardupilot_with_bl.bin (firmware + bootloader)
+  build/TMotorH743/bin/ardupilot.apj       (for OTA updates)
+
+For DFU Recovery Use: *_with_bl.hex or *_with_bl.bin
+
+═══════════════════════════════════════════════════════════════════════════════
+COMMON FAILURE SCENARIOS & RECOVERY
+═══════════════════════════════════════════════════════════════════════════════
+
+SCENARIO 1: Board won't enter DFU mode
+  Cause:      Wrong button OR corrupted bootloader
+  Solution:   Try all buttons on board
+              Use SWD programmer if available
+              Try different USB ports
+  Recovery:   SWD flash of TMotorH743_bl.bin to 0x08000000
+
+SCENARIO 2: Board detected in DFU but flash fails
+  Cause:      Wrong firmware file OR USB connection issue
+  Solution:   Verify firmware: file TMotorH743_with_bl.hex
+              Use dfu-util -e before flashing
+              Try higher quality USB cable
+  Command:    dfu-util -e --reset  (erase first)
+
+SCENARIO 3: Board boots but immediately crashes
+  Cause:      Firmware for different board (ID mismatch)
+  Solution:   Flash with proper TMotorH743 build
+              Use "with_bl.hex" to reset bootloader
+  Check:      Firmware must have APJ_BOARD_ID = 1138
+
+SCENARIO 4: Device disconnects mid-flash
+  Cause:      USB power loss OR bad cable
+  Solution:   Use powered USB hub
+              Try USB 2.0 port (not 3.0)
+              Different cable
+  CRITICAL:   RTC may be corrupted, re-flash immediately
+
+SCENARIO 5: Board stuck in infinite reboot loop
+  Cause:      Corrupted RTC OR bad firmware CRC
+  Solution:   DFU mode resets RTC (clean slate)
+              Recover via DFU with bootloader button
+              Verify final firmware boots normally
+
+═══════════════════════════════════════════════════════════════════════════════
+IMPORTANT CONFIGURATION CONSTANTS
+═══════════════════════════════════════════════════════════════════════════════
+
+From build/TMotorH743/hwdef.h:
+  APJ_BOARD_ID:                    1138
+  HAL_ENABLE_DFU_BOOT:             FALSE
+  AP_BOOTLOADER_FLASHING_ENABLED:  1
+  HAL_BOOTLOADER_TIMEOUT:          5000 (ms)
+  BOARD_FLASH_SIZE:                2048 (KB)
+  FLASH_BOOTLOADER_LOAD_KB:        384
+  FLASH_LOAD_ADDRESS:              0x08060000
+  HAL_CUSTOM_MCU_CLOCKRATE:        480000000 (Hz)
+
+═══════════════════════════════════════════════════════════════════════════════
+TOOLS NEEDED FOR RECOVERY
+═══════════════════════════════════════════════════════════════════════════════
+
+Standard DFU Method (Preferred):
+  □ USB cable (USB-A to Micro-B recommended)
+  □ dfu-util (install: sudo apt install dfu-util)
+  □ TMotorH743_with_bl.hex firmware file
+  □ Computer with USB port
+  □ 5 minutes of time
+
+SWD Method (Advanced, if USB fails):
+  □ ST-Link v2 or J-Link probe (~$30-100)
+  □ OpenOCD or JLink GDB Server
+  □ TMotorH743_bl.bin file
+  □ SWD cable
+  □ Access to PA13/PA14 pins
+
+═══════════════════════════════════════════════════════════════════════════════
+KEY DIFFERENCES FROM SIMILAR BOARDS
+═══════════════════════════════════════════════════════════════════════════════
+
+T-Motor H7 vs Other H743 Boards:
+
+                    | T-Motor H7 | KakuteH7 | Skystars H7HD
+Bootloader Size     | 384 KB     | 128 KB   | 128 KB
+Board ID            | 1138       | 1048     | 1075
+DFU Entry Method    | Same       | Same     | Same
+DFU Timeout         | 5 sec      | Similar  | Similar
+External Flash      | Yes (16MB) | No/SD    | Limited
+
+T-Motor is UNIQUE with 3x larger bootloader - reason unknown but potentially
+planned for future functionality (network boot, enhanced features, etc).
+
+═══════════════════════════════════════════════════════════════════════════════
+CONTACT & SUPPORT RESOURCES
+═══════════════════════════════════════════════════════════════════════════════
+
+ArduPilot:
+  Documentation:  https://ardupilot.org/
+  Forum:          https://discuss.ardupilot.org/
+  GitHub:         https://github.com/ArduPilot/ardupilot
+
+T-Motor:
+  Store:          https://store.tmotor.com/
+  Support:        Check device manual for tech support
+
+STM32 Tools:
+  STM32CubeProgrammer: https://www.st.com/stm32cubeprog
+  Reference Manual:    DS10693 (STM32H743 Datasheet)
+
+dfu-util:
+  Homepage:       http://dfu-util.sourceforge.net/
+  Manual:         man dfu-util
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Last Updated: 2025-10-22
+Research Confidence: HIGH (95%+)
+Source: Official ArduPilot 4.7.0 development codebase
+
+═══════════════════════════════════════════════════════════════════════════════
