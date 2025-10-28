@@ -41,6 +41,15 @@ This directory contains pre-built firmware releases for various flight controlle
 - **MCU**: STM32H743 @ 480 MHz
 - **Manufacturer**: Team BlackSheep
 
+### FlywooH743Pro
+- **Latest Version**: v1.0.0
+- **Location**: `FlywooH743Pro/v1.0.0/`
+- **Firmware Type**: ArduCopter
+- **Configuration**: FlywooH743Pro
+- **MCU**: STM32H743 @ 480 MHz
+- **Manufacturer**: Flywoo
+- **Note**: Also compatible with Goku H743 Pro Mini
+
 ## Directory Structure
 
 ```
@@ -67,7 +76,12 @@ releases/
 │       ├── arducopter.apj
 │       ├── arducopter.bin
 │       └── RELEASE_NOTES.md
-└── TBS_LUCID_H7/
+├── TBS_LUCID_H7/
+│   └── v1.0.0/
+│       ├── arducopter.apj
+│       ├── arducopter.bin
+│       └── RELEASE_NOTES.md
+└── FlywooH743Pro/
     └── v1.0.0/
         ├── arducopter.apj
         ├── arducopter.bin
