@@ -1,6 +1,6 @@
 # TBS LUCID H7 Flight Controller - Release v1.0.0
 
-**Release Date**: October 27, 2025
+**Release Date**: November 1, 2025
 **ArduPilot Version**: 4.7.0-dev (master branch)
 **Board Configuration**: TBS_LUCID_H7
 **Manufacturer**: [Team BlackSheep (TBS)](https://www.team-blacksheep.com/)
@@ -253,7 +253,7 @@ The TBS LUCID H7 is a professional-grade flight controller from Team BlackSheep,
 
 ## Changelog
 
-### v1.0.0 (2025-10-27)
+### v1.0.0 (2025-11-01)
 - Initial release
 - Based on ArduPilot 4.7.0-dev master branch
 - TBS_LUCID_H7 board configuration
