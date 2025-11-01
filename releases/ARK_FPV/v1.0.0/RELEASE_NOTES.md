@@ -1,9 +1,10 @@
 # ARK FPV Flight Controller - Release v1.0.0
 
-**Release Date**: October 27, 2025
+**Release Date**: November 1, 2025
 **ArduPilot Version**: 4.7.0-dev (master branch)
 **Board Configuration**: ARK_FPV
 **Manufacturer**: [ARK Electronics](https://arkelectron.com/)
+**Custom Modifications**: ARMING_DELAY_SEC = 0.0f (instant arming)
 
 ## What's Included
 
@@ -32,6 +33,7 @@
 
 ## Features
 
+✅ **Custom arming delay (0 seconds)** - Instant arming with no delay
 ✅ Industrial-grade IIM-42653 IMU with heater
 ✅ Built-in compass (IIS2MDC magnetometer)
 ✅ High-precision BMP390 barometer
@@ -235,11 +237,15 @@ To rebuild firmware from source:
 
 ## Changelog
 
-### v1.0.0 (2025-10-27)
-- Initial release
-- Based on ArduPilot 4.7.0-dev master branch
+### v1.0.0 (2025-11-01) - Updated
+- **Modified arming delay from 2.0 seconds to 0 seconds** for instant arming
+- Based on ArduPilot 4.7.0-dev master branch (latest)
 - ARK_FPV board configuration
-- Custom arming delay (0 seconds)
 - Full feature set enabled
 - MicroSD logging support
 - Built-in compass and heater-equipped IMU
+- Custom modification: ARMING_DELAY_SEC = 0.0f in ArduCopter/config.h
+
+### Previous (2025-10-27)
+- Initial release structure
+- Standard ArduPilot configuration (2-second arming delay)
