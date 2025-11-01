@@ -1,8 +1,9 @@
 # Goku H743 Pro Mini - Release v1.0.0
 
-**Release Date**: October 27, 2025
+**Release Date**: November 1, 2025
 **ArduPilot Version**: 4.7.0-dev (master branch)
 **Board Configuration**: FlywooH743Pro
+**Custom Modifications**: ARMING_DELAY_SEC = 0.0f (instant arming)
 
 ## What's Included
 
@@ -22,6 +23,7 @@
 
 ## Features
 
+✅ **Custom arming delay (0 seconds)** - Instant arming with no delay
 ✅ Dual IMU redundancy
 ✅ Bi-directional DShot support
 ✅ OSD (analog and DisplayPort)
@@ -112,17 +114,22 @@ None reported for this release.
 
 ## Build Information
 
-- **Commit**: 9c4223f
-- **Build Date**: 2025-10-27
+- **Build Date**: 2025-11-01
 - **Toolchain**: gcc-arm-none-eabi 13.2.1
 - **Python**: 3.11.14
 - **Build Time**: ~3 minutes
+- **Modifications**: ArduCopter/config.h - ARMING_DELAY_SEC changed from 2.0f to 0.0f
 
 ## Changelog
 
-### v1.0.0 (2025-10-27)
-- Initial release
-- Based on ArduPilot 4.7.0-dev master branch
+### v1.0.0 (2025-11-01) - Updated
+- **Modified arming delay from 2.0 seconds to 0 seconds** for instant arming
+- Based on ArduPilot 4.7.0-dev master branch (latest)
 - FlywooH743Pro board configuration
 - Full feature set enabled
 - Pre-configured UART mappings
+- Custom modification: ARMING_DELAY_SEC = 0.0f in ArduCopter/config.h
+
+### Previous (2025-10-27)
+- Initial release
+- Standard ArduPilot configuration (2-second arming delay)
