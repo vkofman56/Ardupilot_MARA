@@ -36,9 +36,11 @@ python3 -m pip install --user --break-system-packages empy==3.3.4
 # echo "Cleaning previous build..."
 # ./waf distclean
 
-# Configure for FlywooH743Pro board
-echo "Configuring for FlywooH743Pro board..."
-./waf configure --board FlywooH743Pro
+# Configure for FlywooH743Pro board with custom hwdef for flash support
+echo "Configuring for FlywooH743Pro board with Goku flash support..."
+CUSTOM_HWDEF="/home/user/Ardupilot_MARA/Goku_H743_Pro_Mini/hwdef-goku.dat"
+echo "Using custom hwdef: $CUSTOM_HWDEF"
+./waf configure --board FlywooH743Pro --extra-hwdef "$CUSTOM_HWDEF"
 
 # Build ArduCopter
 echo "Building ArduCopter..."
@@ -59,7 +61,8 @@ if [ $? -eq 0 ]; then
     echo "  MCU: STM32H743VIH6 (480 MHz)"
     echo "  IMU: Dual ICM42688P"
     echo "  Barometer: SPL06"
-    echo "  Features: 500MB flash, 7 UARTs, 13 PWM outputs, OSD"
+    echo "  Features: 500MB NAND flash logging (LittleFS), 7 UARTs, 13 PWM outputs, OSD"
+    echo "  Flash CS: PA15 (beeper disabled)"
     echo ""
     echo "UART Mapping:"
     echo "  SERIAL0 -> USB"
@@ -77,6 +80,12 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "Firmware updates:"
     echo "  Upload the .apj file using Mission Planner or QGroundControl"
+    echo ""
+    echo "Flash Logging:"
+    echo "  - 500MB onboard NAND flash with LittleFS filesystem"
+    echo "  - Logs stored on SPI3 flash (PA15=CS)"
+    echo "  - LOG_BACKEND_TYPE should auto-detect (or set to 1)"
+    echo "  - Note: Beeper on PA15 is disabled for flash support"
     echo "##############################################"
 else
     echo "Build failed. Please check the error messages above."

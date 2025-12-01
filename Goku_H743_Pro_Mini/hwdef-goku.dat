@@ -1,0 +1,37 @@
+# Custom hwdef additions for Goku H743 Pro Mini
+# Use with: ./waf configure --board FlywooH743Pro --extra-hwdef /path/to/hwdef-goku.dat
+# Based on JHEMCU-H743HD flash configuration
+
+# ==========================================
+# FLASH LOGGING SUPPORT
+# ==========================================
+# The Goku H743 Pro Mini has 500MB onboard NAND flash
+# instead of an SD card slot like the FlywooH743Pro
+
+# Disable SD card (SDMMC1) - Goku uses onboard flash instead
+undef SDMMC1
+
+# Reassign PA15 from ALARM to Flash Chip Select
+# NOTE: This disables the beeper functionality on PA15
+undef PA15
+PA15 FLASH1_CS CS
+
+# Configure SPI3 for dataflash
+# SPI3 pins on FlywooH743Pro: PB3 (SCK), PB4 (MISO), PB5 (MOSI)
+SPIDEV dataflash SPI3 DEVID1 FLASH1_CS MODE3 104*MHZ 104*MHZ
+
+# Use LittleFS filesystem for NAND flash (W25N series)
+DATAFLASH littlefs:w25nxx
+
+# Enable dataflash logging
+define HAL_LOGGING_DATAFLASH_ENABLED 1
+
+# Remove FATFS (SD card filesystem) since we use LittleFS
+undef HAL_OS_FATFS_IO
+
+# ==========================================
+# NOTES
+# ==========================================
+# - Beeper on PA15 is disabled (pin used for flash CS)
+# - If you need beeper, remap to another pin or use motor buzzer
+# - LOG_BACKEND_TYPE should auto-detect dataflash
