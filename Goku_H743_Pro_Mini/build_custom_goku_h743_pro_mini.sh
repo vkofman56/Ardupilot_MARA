@@ -9,7 +9,7 @@
 #   - OSD: AT7456E
 #   - 13 PWM/DShot outputs (12 motors + 1 LED)
 #   - 7 UART ports
-#   - Flash: 500MB onboard
+#   - Flash: 512MB onboard (SDIO interface)
 #   - Battery: 2S-6S support
 
 echo "Building custom ArduCopter firmware for Goku H743 Pro Mini..."
@@ -22,6 +22,7 @@ echo "  - Barometer: SPL06"
 echo "  - 13 PWM outputs (bi-directional DShot on channels 1-10)"
 echo "  - 7 UART ports with predefined functions"
 echo "  - OSD support (AT7456E)"
+echo "  - 512MB onboard flash (SDIO interface)"
 echo ""
 
 # Navigate to ardupilot directory
@@ -59,7 +60,7 @@ if [ $? -eq 0 ]; then
     echo "  MCU: STM32H743VIH6 (480 MHz)"
     echo "  IMU: Dual ICM42688P"
     echo "  Barometer: SPL06"
-    echo "  Features: 500MB flash, 7 UARTs, 13 PWM outputs, OSD"
+    echo "  Features: 512MB SDIO flash, 7 UARTs, 13 PWM outputs, OSD"
     echo ""
     echo "UART Mapping:"
     echo "  SERIAL0 -> USB"
@@ -77,6 +78,19 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "Firmware updates:"
     echo "  Upload the .apj file using Mission Planner or QGroundControl"
+    echo ""
+    echo "IMPORTANT - Flash Logging Setup:"
+    echo "  The 512MB onboard flash uses SDIO interface (appears as SD card)."
+    echo "  MUST be formatted as FAT32 (not FAT16) for ArduPilot logging to work."
+    echo "  "
+    echo "  If logging shows 'Error' in Mission Planner:"
+    echo "    1. Flash Betaflight temporarily"
+    echo "    2. Go to Blackbox -> Activate Mass Storage Device Mode"
+    echo "    3. Format the drive as FAT32:"
+    echo "       macOS: sudo newfs_msdos -F 32 -v ARDUPILOT /dev/diskXs1"
+    echo "       Windows: Format as FAT32 (may need third-party tool for >32GB)"
+    echo "       Linux: sudo mkfs.vfat -F 32 /dev/sdX1"
+    echo "    4. Eject, power cycle, and flash ArduPilot again"
     echo "##############################################"
 else
     echo "Build failed. Please check the error messages above."

@@ -16,7 +16,7 @@
 - **IMU**: Dual ICM42688P gyroscopes
 - **Barometer**: SPL06
 - **OSD**: AT7456E (analog) + DisplayPort (digital)
-- **Flash**: 500MB onboard
+- **Flash**: 512MB onboard (SDIO interface)
 - **PWM Outputs**: 13 (12 motors + 1 LED, bi-directional DShot on 1-10)
 - **UART Ports**: 7 with predefined functions
 - **Battery**: 2S-6S LiPo support
@@ -24,6 +24,7 @@
 ## Features
 
 ✅ **Custom arming delay (0 seconds)** - Instant arming with no delay
+✅ **512MB onboard flash logging** (SDIO interface, appears as SD card)
 ✅ Dual IMU redundancy
 ✅ Bi-directional DShot support
 ✅ OSD (analog and DisplayPort)
@@ -33,6 +34,26 @@
 ✅ ESC telemetry (UART6)
 ✅ External compass via I2C
 ✅ Battery voltage and current sensing
+
+## ⚠️ IMPORTANT: Flash Logging Setup
+
+The 512MB onboard flash uses **SDIO interface** and appears as an "SD card" to the firmware.
+
+**The flash MUST be formatted as FAT32 (not FAT16) for ArduPilot logging to work.**
+
+If you see "Logging: Error" in Mission Planner after flashing:
+
+1. Flash Betaflight firmware temporarily
+2. In Betaflight Configurator, go to **Blackbox** tab
+3. Click **"Activate Mass Storage Device Mode"**
+4. Format the drive as **FAT32**:
+   - **macOS**: `sudo newfs_msdos -F 32 -v ARDUPILOT /dev/diskXs1`
+   - **Windows**: Use FAT32 formatter (built-in format may use FAT16 for small drives)
+   - **Linux**: `sudo mkfs.vfat -F 32 /dev/sdX1`
+5. Eject the drive and power cycle the FC
+6. Flash ArduPilot firmware again
+
+**Note**: Betaflight formats the flash as FAT16 by default, which ArduPilot does not support for logging.
 
 ## Flash Usage
 
@@ -83,8 +104,10 @@ BATT_AMP_PERVLT = 40
 
 ## First-Time Setup Checklist
 
+- [ ] Format onboard flash as FAT32 (see instructions above)
 - [ ] Flash firmware via OTA or DFU
 - [ ] Connect to Mission Planner/QGroundControl
+- [ ] Verify "Logging" shows "Normal" (not "Error")
 - [ ] Perform accelerometer calibration
 - [ ] Perform compass calibration (external compass)
 - [ ] Configure RC input (SERIAL2)
@@ -97,7 +120,7 @@ BATT_AMP_PERVLT = 40
 
 ## Known Issues
 
-None reported for this release.
+- **Logging Error**: If "Logging: Error" appears, format flash as FAT32 (see instructions above)
 
 ## Compatibility
 
@@ -122,14 +145,13 @@ None reported for this release.
 
 ## Changelog
 
-### v1.0.0 (2025-11-01) - Updated
-- **Modified arming delay from 2.0 seconds to 0 seconds** for instant arming
-- Based on ArduPilot 4.7.0-dev master branch (latest)
+### v1.0.0 (2025-12-01) - Updated
+- **Added FAT32 formatting instructions** for onboard flash logging
+- **Clarified**: Flash uses SDIO interface (512MB, appears as SD card)
+- Modified arming delay from 2.0 seconds to 0 seconds for instant arming
+- Based on ArduPilot 4.7.0-dev master branch
 - FlywooH743Pro board configuration
-- Full feature set enabled
-- Pre-configured UART mappings
-- Custom modification: ARMING_DELAY_SEC = 0.0f in ArduCopter/config.h
 
-### Previous (2025-10-27)
-- Initial release
-- Standard ArduPilot configuration (2-second arming delay)
+### v1.0.0 (2025-11-01) - Initial
+- Initial release with 0-second arming delay
+- Standard ArduPilot configuration
