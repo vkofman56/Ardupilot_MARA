@@ -1,37 +1,38 @@
 # Custom hwdef additions for Goku H743 Pro Mini
 # Use with: ./waf configure --board FlywooH743Pro --extra-hwdef /path/to/hwdef-goku.dat
-# Based on JHEMCU-H743HD flash configuration
+#
+# IMPORTANT: The Goku H743 Pro Mini has 512MB onboard flash connected via SDIO
+# (appears as "SD card" to the firmware). This is NOT SPI flash!
+# Betaflight confirms: 476MB free, Card ready
+#
+# The standard FlywooH743Pro SDMMC config should work, but ArduPilot shows
+# "Logging: Error". This hwdef attempts to fix potential issues.
 
 # ==========================================
-# FLASH LOGGING SUPPORT
+# SDIO FLASH SUPPORT (NOT SPI!)
 # ==========================================
-# The Goku H743 Pro Mini has 500MB onboard NAND flash
-# instead of an SD card slot like the FlywooH743Pro
 
-# Disable SD card (SDMMC1) - Goku uses onboard flash instead
-undef SDMMC1
+# Ensure SDMMC is enabled (should be default, but being explicit)
+# The onboard flash uses SDIO interface on pins:
+#   PC12 = SDIO_CK
+#   PD02 = SDIO_CMD
+#   PC08 = SDIO_D0
+#   PC09 = SDIO_D1
+#   PC10 = SDIO_D2
+#   PC11 = SDIO_D3
 
-# Reassign PA15 from ALARM to Flash Chip Select
-# NOTE: This disables the beeper functionality on PA15
-undef PA15
-PA15 FLASH1_CS CS
+# Force no SD card detect pin (onboard flash is always present)
+define SDCARD_DETECT_PIN -1
 
-# Configure SPI3 for dataflash
-# SPI3 pins on FlywooH743Pro: PB3 (SCK), PB4 (MISO), PB5 (MOSI)
-SPIDEV dataflash SPI3 DEVID1 FLASH1_CS MODE3 104*MHZ 104*MHZ
+# Ensure FAT filesystem is enabled
+define HAL_OS_FATFS_IO 1
 
-# Use LittleFS filesystem for NAND flash (W25N series)
-DATAFLASH littlefs:w25nxx
-
-# Enable dataflash logging
-define HAL_LOGGING_DATAFLASH_ENABLED 1
-
-# Remove FATFS (SD card filesystem) since we use LittleFS
-undef HAL_OS_FATFS_IO
+# Set minimum free space for logging (MB)
+define HAL_LOGGER_MIN_MB_FREE 10
 
 # ==========================================
 # NOTES
 # ==========================================
-# - Beeper on PA15 is disabled (pin used for flash CS)
-# - If you need beeper, remap to another pin or use motor buzzer
-# - LOG_BACKEND_TYPE should auto-detect dataflash
+# - Flash is on SDIO, NOT SPI
+# - Betaflight sees it as 476MB SD card
+# - If logging still fails, may need SDIO timing adjustments
